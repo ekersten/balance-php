@@ -21,9 +21,9 @@ return array
              * Ports and sockets may be appended to the hostname.
              */
             'hostname' => 'localhost',
-            'database' => 'kersten_kersten',
-            'username' => 'kersten_kersten',
-            'password' => 'k3r5t3n',
+            'database' => 'balance',
+            'username' => 'root',
+            'password' => '',
             'persistent' => FALSE,
         ),
         'table_prefix' => '',
