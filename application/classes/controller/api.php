@@ -67,7 +67,7 @@ class Controller_Api extends Controller{
         $params = $this->checkParams($params);
 
         if ($params !== false) {
-            $user = ORM::factory('user')->where('email','=',$params['email'])->where('password','=',$params['password'])->find();
+            $user = ORM::factory('user')->where('email','=',$params['email'])->where('password','=',md5($params['password']))->find();
 
             if($user->loaded()){
                 
@@ -79,7 +79,7 @@ class Controller_Api extends Controller{
                 $token = ORM::factory('token');
                 $token->user_id = $user->id;
                 $token->create_date = date('Y-m-d H:i:s');
-                $token->expire_date = date('Y-m-d H:m:s', strtotime("+60 days"));
+                $token->expire_date = date('Y-m-d H:m:s', strtotime("+120 days"));
                 $token->token = md5($token->user_id . $token->create_date + $token->expire_date);
                 
                 $token->save();
