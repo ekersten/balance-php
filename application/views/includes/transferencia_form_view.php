@@ -27,7 +27,7 @@
 		<div class="control-group">
 			<label class="control-label" for="ammout">Monto</label>
 			<div class="controls">
-				<input type="number" class="input" name="ammount" step="0.1" min="0" value="0.0"/>
+				<input type="text" class="input" name="ammount" value="0.0"/>
 			</div>
 		</div>
 
