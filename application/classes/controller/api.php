@@ -144,7 +144,7 @@ class Controller_Api extends Controller{
         }
     }
 
-    public function action_forms_data(){
+    public function action_get_forms_data(){
         $params = array(
             'auth_token' => array(
                 'required' => true,
