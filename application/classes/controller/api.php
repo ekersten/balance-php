@@ -17,40 +17,6 @@ class Controller_Api extends Controller{
         $this->result->method = $this->request->action();
     }
 
-    public function action_create_token(){
-        $email = $this->request->post('email');
-        $password = md5($this->request->post('password'));
-
-        $user = ORM::factory('user')->where('email','=',$email)->where('password','=',$password)->find();
-
-        if($user->loaded()){
-            
-            $old_token = ORM::factory('token')->where('user_id', '=', $user->id)->find();
-            if($old_token->loaded()){
-                $old_token->delete();
-            }
-            
-            $token = ORM::factory('token');
-            $token->user_id = $user->id;
-            $token->create_date = date('Y-m-d H:i:s');
-            $token->expire_date = date('Y-m-d H:m:s', strtotime("+60 days"));
-            $token->token = md5($token->user_id . $token->create_date + $token->expire_date);
-            
-            $token->save();
-            
-            $this->result->status = 'ok';
-            $this->result->data = array(
-                'token' => $token->token
-            );
-            
-        }else{
-            $this->result->status = 'error';
-            $this->result->data = array(
-                'error_code' => self::$LOGIN_ERROR_CODE,
-                'error_msg' => 'login_error'
-            );
-        }
-    }
     public function action_login(){
 
         $params = array(
@@ -80,7 +46,7 @@ class Controller_Api extends Controller{
                 $token->user_id = $user->id;
                 $token->create_date = date('Y-m-d H:i:s');
                 $token->expire_date = date('Y-m-d H:m:s', strtotime("+120 days"));
-                $token->token = md5($token->user_id . $token->create_date + $token->expire_date);
+                $token->token = md5($token->user_id . $token->create_date + $token->expire_date . (microtime() * 10000));
                 
                 $token->save();
                 
@@ -178,7 +144,7 @@ class Controller_Api extends Controller{
         }
     }
 
-    public function action_get_main_data(){
+    public function action_forms_data(){
         $params = array(
             'auth_token' => array(
                 'required' => true,
@@ -221,6 +187,40 @@ class Controller_Api extends Controller{
                 ));
             }
         }
+    }
+
+    public function action_get_accounts_balance(){
+
+        $params = array(
+            'auth_token' => array(
+                'required' => true,
+                'format' => '#^[0-9a-f]{32}$#'
+             )
+        );
+
+        $params = $this->checkParams($params);
+        
+        if ($params !== false) {
+            
+            $accounts = ORM::factory('account')->find_all();
+            
+
+            $this->result->status = 'ok';
+            $this->result->data = array(
+                'accounts' => array()
+            );
+
+            foreach($accounts as $account){
+                array_push($this->result->data['accounts'], array(
+                    'id' => $account->id,
+                    'name' => $account->name,
+                    'balance' => $account->balance
+                ));
+            }
+
+            
+        }
+
     }
 
     private function checkParams ($pArr) {
@@ -275,13 +275,13 @@ class Controller_Api extends Controller{
     }
 
     private function is_token_valid($token){
-        $data = false;
+        $data = true;
 
         $db_token = ORM::factory('token')->where('token', '=', $token)->find();
         
         if ($db_token->loaded()) {
-            $expire_date = strtotime($db_token->expire_date);
-            $now = strtotime(date('Y-m-d H:i:s'));
+            $expire_date = date('U', strtotime($db_token->expire_date));
+            $now = date('U', strtotime(date('Y-m-d H:i:s')));
             
             if ($expire_date < $now) {
                 $data = array(
@@ -289,8 +289,6 @@ class Controller_Api extends Controller{
                     'error_message' => 'token_expired'
                 );
             }
-
-            $data = true;
 
         } else {
             $data = array(
