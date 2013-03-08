@@ -11,7 +11,7 @@ class Controller_Api extends Controller{
     private static $WRONG_PARAM_FORMAT_CODE = 5;
     
     
-    function before() {
+    public function before() {
         parent::before();
         $this->result = new stdClass();
         $this->result->method = $this->request->action();
@@ -120,17 +120,74 @@ class Controller_Api extends Controller{
 
     }
 
+    public function action_get_entries(){
+        $params = array(
+            'auth_token' => array(
+                'required' => true,
+                'format' => '#^[0-9a-f]{32}$#'
+             ),
+            'page' => array(
+                'required' => false,
+                'format' => '#^[0-9]*$#',
+                'default' => 1
+             ),
+            'per_page' => array(
+                'required' => false,
+                'format' => '#^[0-9]*$#',
+                'default' => 50
+             ),
+
+        );
+
+        $params = $this->checkParams($params);
+        if ($params !== false) {
+            $entries = ORM::factory('entry')
+                ->with('user')
+                ->with('category')
+                ->with('accout')
+                ->with('type')
+                ->limit($params['per_page'])
+                ->order_by('created', 'desc');
+
+
+            if($params['page'] != null){
+                $this->result->after = $params['page'];
+                
+            }
+
+            $entries = $entries->find_all();
+
+                $this->result->status = 'ok';
+                $this->result->data = array(
+                    'entries' => array()
+                );
+
+                foreach($entries as $entry){
+                    array_push($this->result->data['entries'], array(
+                        'id' => $entry->id,
+                        'created' => date('r', strtotime($entry->created)),
+                        'ammount' => $entry->ammount,
+                        'comment' => $entry->comment,
+                        'type' => $entry->type_id,
+                        'user' => $entry->user->firstname,
+                        'account' => $entry->account->name,
+                        'category' => $entry->category->name
+                    ));
+                }
+        }
+    }
+
     private function checkParams ($pArr) {
 
         $params_ok = true;
         $params = array();
 
-        foreach ($pArr as $paramName => $paramValue) {
+        foreach ($pArr as $paramName => $paramProps) {
 
             $param_value = $this->request->query($paramName, null);
             $is_present = $param_value !== null;
 
-            if ($paramValue['required'] === true && !$is_present) {
+            if ($paramProps['required'] === true && !$is_present) {
                 $this->result->status = 'error';
                 $this->result->data = array(
                     'error_code' => self::$MISSING_PARAM_CODE,
@@ -139,7 +196,7 @@ class Controller_Api extends Controller{
 
                 $params_ok = false;
 
-            }else if ($is_present && preg_match($paramValue['format'], $param_value) === 0) {
+            }else if ($is_present && preg_match($paramProps['format'], $param_value) === 0) {
                 $this->result->status = 'error';
                 $this->result->data = array(
                     'error_code' => self::$WRONG_PARAM_FORMAT_CODE,
@@ -160,6 +217,9 @@ class Controller_Api extends Controller{
                     $params_ok = false;
                 }
             } else {
+                if ($param_value === null && isset($paramProps['default'])) {
+                    $param_value = $paramProps['default'];
+                }
                 $params[$paramName] = $param_value;
             }
         }
@@ -196,7 +256,7 @@ class Controller_Api extends Controller{
         return $data;
     }
     
-    function after(){
+    public function after(){
         parent::after();
         
         $this->response->headers('Content-type', File::mime_by_ext($this->request->param('format')));
@@ -205,9 +265,52 @@ class Controller_Api extends Controller{
         
         $this->response->body($response_content);
     }
+
+    /**
+    *    Encode an object as XML string
+    *    @param        Object $obj
+    *    @param        string $root_node
+    *    @return        string $xml
+    */
+   public function encodeObj($obj, $root_node = 'response') {
+       $xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
+       $xml .= self::encode($obj, $root_node, $depth = 0);
+       return $xml;
+   }
+
+
+   /**
+    *    Encode an object as XML string
+    *    @param        Object|array $data
+    *    @param        string $root_node        
+    *    @param        int $depth                Used for indentation
+    *    @return        string $xml
+    */
+   private function encode($data, $node, $depth) {
+       $xml = str_repeat("\t", $depth);
+       $nodename = (is_numeric($node)) ? 'item' : $node;
+       
+       $xml .= "<$nodename>\n";
+       foreach($data as $key => $val) {
+           if(is_array($val) || is_object($val)) {
+                $xml .= self::encode($val, $key, ($depth + 1));
+           } else {
+                $xml .= str_repeat("\t", ($depth + 1));
+                $xml .= "<$key>" . htmlspecialchars($val) . "</$key>\n";
+           }
+       }
+       $xml .= str_repeat("\t", $depth);
+
+       $xml .= "</$nodename>\n";
+       return $xml;
+   }
     
+   private function process_xml($obj){
+    return $this->encodeObj($obj);
+   }
+
     private function process_json($obj){
         return json_encode($obj);
     }
-        
+
 }
