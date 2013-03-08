@@ -147,11 +147,12 @@ class Controller_Api extends Controller{
                 ->with('accout')
                 ->with('type')
                 ->limit($params['per_page'])
-                ->order_by('created', 'desc');
+                ->order_by('created', 'desc')
+                ->order_by('id', 'desc');
 
 
             if($params['page'] != null){
-                $this->result->after = $params['page'];
+                $entries->offset(($params['page'] - 1) * $params['per_page']);
                 
             }
 
@@ -174,6 +175,51 @@ class Controller_Api extends Controller{
                         'category' => $entry->category->name
                     ));
                 }
+        }
+    }
+
+    public function action_get_main_data(){
+        $params = array(
+            'auth_token' => array(
+                'required' => true,
+                'format' => '#^[0-9a-f]{32}$#'
+             )
+        );
+
+        $params = $this->checkParams($params);
+        
+        if ($params !== false) {
+            $categories = ORM::factory('category')->find_all();
+            $accounts = ORM::factory('account')->find_all();
+            $types = ORM::factory('type')->find_all();
+
+            $this->result->status = 'ok';
+            $this->result->data = array(
+                'accounts' => array(),
+                'categories' => array(),
+                'types' => array()
+            );
+
+            foreach($accounts as $account){
+                array_push($this->result->data['accounts'], array(
+                    'id' => $account->id,
+                    'name' => $account->name
+                ));
+            }
+
+            foreach($categories as $category){
+                array_push($this->result->data['categories'], array(
+                    'id' => $category->id,
+                    'name' => $category->name
+                ));
+            }
+
+            foreach($types as $type){
+                array_push($this->result->data['types'], array(
+                    'id' => $type->id,
+                    'name' => $type->name
+                ));
+            }
         }
     }
 
@@ -266,48 +312,37 @@ class Controller_Api extends Controller{
         $this->response->body($response_content);
     }
 
-    /**
-    *    Encode an object as XML string
-    *    @param        Object $obj
-    *    @param        string $root_node
-    *    @return        string $xml
-    */
-   public function encodeObj($obj, $root_node = 'response') {
-       $xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
-       $xml .= self::encode($obj, $root_node, $depth = 0);
-       return $xml;
-   }
+    public function encodeObj($obj, $root_node = 'response') {
+        $xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
+        $xml .= self::encode($obj, $root_node, $depth = 0);
+        return $xml;
+    }
 
 
-   /**
-    *    Encode an object as XML string
-    *    @param        Object|array $data
-    *    @param        string $root_node        
-    *    @param        int $depth                Used for indentation
-    *    @return        string $xml
-    */
-   private function encode($data, $node, $depth) {
-       $xml = str_repeat("\t", $depth);
-       $nodename = (is_numeric($node)) ? 'item' : $node;
-       
-       $xml .= "<$nodename>\n";
-       foreach($data as $key => $val) {
-           if(is_array($val) || is_object($val)) {
+    private function encode($data, $node, $depth) {
+        $xml = str_repeat("\t", $depth);
+        $nodename = (is_numeric($node)) ? 'item' : $node;
+
+        $xml .= "<$nodename>\n";
+
+        foreach($data as $key => $val) {
+            if(is_array($val) || is_object($val)) {
                 $xml .= self::encode($val, $key, ($depth + 1));
-           } else {
+            } else {
                 $xml .= str_repeat("\t", ($depth + 1));
                 $xml .= "<$key>" . htmlspecialchars($val) . "</$key>\n";
-           }
-       }
-       $xml .= str_repeat("\t", $depth);
+            }
+        }
 
-       $xml .= "</$nodename>\n";
-       return $xml;
-   }
+        $xml .= str_repeat("\t", $depth);
+
+        $xml .= "</$nodename>\n";
+        return $xml;
+    }
     
-   private function process_xml($obj){
-    return $this->encodeObj($obj);
-   }
+    private function process_xml($obj){
+        return $this->encodeObj($obj);
+    }
 
     private function process_json($obj){
         return json_encode($obj);
