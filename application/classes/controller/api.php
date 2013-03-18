@@ -52,17 +52,19 @@ class Controller_Api extends Controller{
                 
                 $this->result->status = 'ok';
                 $this->result->data = array(
-                    'token' => $token->token
+                    'auth_token' => $token->token
                 );
                 
             }else{
                 $this->result->status = 'error';
                 $this->result->data = array(
                     'error_code' => self::$LOGIN_ERROR_CODE,
-                    'error_msg' => 'login_error'
+                    'error_message' => 'Login Error'
                 );
             }
         }
+
+        Log::instance()->add(Log::NOTICE, sprintf('Login attemp with email %s and password %s result is %s', $params['email'], $params['password'], $this->result->status));
     }
     
     public function action_test(){
@@ -221,6 +223,21 @@ class Controller_Api extends Controller{
             
         }
 
+    }
+
+    public function action_get_tokens() {
+        $this->result->status = 'ok';
+        $this->result->data = array(
+            'tokens' => array()
+        );
+
+        $tokens = ORM::factory('token')->find_all();
+        foreach ($tokens as $token) {
+            array_push($this->result->data['tokens'], array(
+                'user_id' => $token->user_id,
+                'token' => $token->token
+            ));
+        }
     }
 
     private function checkParams ($pArr) {
