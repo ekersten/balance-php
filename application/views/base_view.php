@@ -34,6 +34,12 @@
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="js/libs/jquery-1.7.2.min.js"><\/script>')</script>
 
+    <script>
+    var K = {
+        'base_url': '<?php echo Kohana::$base_url; ?>'
+    };
+    </script>
+
     <script src="js/bootstrap-transition.js"></script>
     <script src="js/bootstrap-alert.js"></script>
     <script src="js/bootstrap-modal.js"></script>
@@ -50,5 +56,10 @@
     
     <script src="js/plugins.js"></script>
     <script src="js/script.js"></script>
+    <?php
+        foreach($scripts as $script) {
+            echo '<script src="' . $script . '"></script>';
+        }
+    ?>
   </body>
 </html>

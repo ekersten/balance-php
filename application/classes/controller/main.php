@@ -10,6 +10,7 @@ class Controller_Main extends Controller_DefaultTemplate {
 		if(Session::instance()->get('active_user',FALSE) !== FALSE){
 			$this->active_user = ORM::factory('user',Session::instance()->get('active_user',FALSE));
 			View::bind_global('active_user', $this->active_user);
+			View::set_global('active_section', 'home');
 		}else{
 			$this->request->redirect('login');
 		}

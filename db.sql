@@ -8,6 +8,8 @@ USE `balance` ;
 -- -----------------------------------------------------
 -- Table `balance`.`accounts`
 -- -----------------------------------------------------
+DROP TABLE IF EXISTS `balance`.`accounts` ;
+
 CREATE  TABLE IF NOT EXISTS `balance`.`accounts` (
   `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT ,
   `name` VARCHAR(250) NULL DEFAULT NULL ,
@@ -22,6 +24,8 @@ DEFAULT CHARACTER SET = utf8;
 -- -----------------------------------------------------
 -- Table `balance`.`categories`
 -- -----------------------------------------------------
+DROP TABLE IF EXISTS `balance`.`categories` ;
+
 CREATE  TABLE IF NOT EXISTS `balance`.`categories` (
   `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT ,
   `name` VARCHAR(250) NULL DEFAULT NULL ,
@@ -34,6 +38,8 @@ DEFAULT CHARACTER SET = utf8;
 -- -----------------------------------------------------
 -- Table `balance`.`entries`
 -- -----------------------------------------------------
+DROP TABLE IF EXISTS `balance`.`entries` ;
+
 CREATE  TABLE IF NOT EXISTS `balance`.`entries` (
   `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT ,
   `created` DATE NULL DEFAULT NULL ,
@@ -50,8 +56,24 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
+-- Table `balance`.`roles`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `balance`.`roles` ;
+
+CREATE  TABLE IF NOT EXISTS `balance`.`roles` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `name` VARCHAR(255) NULL DEFAULT NULL ,
+  PRIMARY KEY (`id`) )
+ENGINE = InnoDB
+AUTO_INCREMENT = 4
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
 -- Table `balance`.`tokens`
 -- -----------------------------------------------------
+DROP TABLE IF EXISTS `balance`.`tokens` ;
+
 CREATE  TABLE IF NOT EXISTS `balance`.`tokens` (
   `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT ,
   `user_id` INT(11) NULL DEFAULT NULL ,
@@ -60,12 +82,15 @@ CREATE  TABLE IF NOT EXISTS `balance`.`tokens` (
   `token` CHAR(32) NULL DEFAULT NULL ,
   PRIMARY KEY (`id`) )
 ENGINE = InnoDB
+AUTO_INCREMENT = 47
 DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
 -- Table `balance`.`types`
 -- -----------------------------------------------------
+DROP TABLE IF EXISTS `balance`.`types` ;
+
 CREATE  TABLE IF NOT EXISTS `balance`.`types` (
   `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT ,
   `name` VARCHAR(250) NULL DEFAULT NULL ,
@@ -78,12 +103,15 @@ DEFAULT CHARACTER SET = utf8;
 -- -----------------------------------------------------
 -- Table `balance`.`users`
 -- -----------------------------------------------------
+DROP TABLE IF EXISTS `balance`.`users` ;
+
 CREATE  TABLE IF NOT EXISTS `balance`.`users` (
   `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT ,
   `firstname` VARCHAR(250) NULL DEFAULT NULL ,
   `lastname` VARCHAR(250) NULL DEFAULT NULL ,
   `email` VARCHAR(250) NULL DEFAULT NULL ,
   `password` CHAR(32) NULL DEFAULT NULL ,
+  `role_id` INT(11) NULL DEFAULT NULL ,
   PRIMARY KEY (`id`) )
 ENGINE = MyISAM
 AUTO_INCREMENT = 3

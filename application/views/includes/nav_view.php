@@ -16,13 +16,18 @@
           <li><a href="<?php echo Kohana::$base_url; ?>login/logout">Salir</a></li>
         </ul>
       </div>
-      <div class="nav-collapse">
+      
         <ul class="nav">
-          <li class="active">
+          <li<?php if($active_section == 'home') echo ' class="active"';?>>
             <a href="<?php echo Kohana::$base_url; ?>main">Home</a>
           </li>
+          <?php if ($active_user->role->id <= 1) { ?>
+          <li<?php if($active_section == 'reportes') echo ' class="active"';?>>
+            <a href="<?php echo Kohana::$base_url; ?>reportes">Reportes</a>
+          </li>
+          <?php } ?>
         </ul>
-      </div><!--/.nav-collapse -->
+      
     </div>
   </div>
 </div>

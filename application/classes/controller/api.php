@@ -4,6 +4,8 @@ class Controller_Api extends Controller{
     
     public $result;
     
+    private $benchmark;
+
     private static $LOGIN_ERROR_CODE = 1;
     private static $TOKEN_EXPIRED_CODE = 2;
     private static $TOKEN_IVALID_CODE = 3;
@@ -12,6 +14,7 @@ class Controller_Api extends Controller{
     
     
     public function before() {
+        //$this->benchmark = Profiler::start('Execution time', $this->request->action());
         parent::before();
         $this->result = new stdClass();
         $this->result->method = $this->request->action();
@@ -112,8 +115,9 @@ class Controller_Api extends Controller{
             $entries = ORM::factory('entry')
                 ->with('user')
                 ->with('category')
-                ->with('accout')
+                ->with('account')
                 ->with('type')
+                ->where('type_id', '!=', '3')
                 ->limit($params['per_page'])
                 ->order_by('created', 'desc')
                 ->order_by('id', 'desc');
@@ -157,37 +161,16 @@ class Controller_Api extends Controller{
         $params = $this->checkParams($params);
         
         if ($params !== false) {
-            $categories = ORM::factory('category')->find_all();
-            $accounts = ORM::factory('account')->find_all();
-            $types = ORM::factory('type')->find_all();
+            $categories = ORM::factory('category')->find_all()->as_array('id','name');
+            $accounts = ORM::factory('account')->find_all()->as_array('id','name');
+            $types = ORM::factory('type')->find_all()->as_array('id','name');
 
             $this->result->status = 'ok';
             $this->result->data = array(
-                'accounts' => array(),
-                'categories' => array(),
-                'types' => array()
+                'accounts' => $accounts,
+                'categories' => $categories,
+                'types' => $types
             );
-
-            foreach($accounts as $account){
-                array_push($this->result->data['accounts'], array(
-                    'id' => $account->id,
-                    'name' => $account->name
-                ));
-            }
-
-            foreach($categories as $category){
-                array_push($this->result->data['categories'], array(
-                    'id' => $category->id,
-                    'name' => $category->name
-                ));
-            }
-
-            foreach($types as $type){
-                array_push($this->result->data['types'], array(
-                    'id' => $type->id,
-                    'name' => $type->name
-                ));
-            }
         }
     }
 
@@ -206,21 +189,15 @@ class Controller_Api extends Controller{
             
             $accounts = ORM::factory('account')->find_all();
             
-
+            $res_accounts =  array();
+            foreach($accounts as $account){
+                $res_accounts[] = $account->as_array();
+            }
             $this->result->status = 'ok';
             $this->result->data = array(
-                'accounts' => array()
+                'accounts' => $res_accounts
             );
 
-            foreach($accounts as $account){
-                array_push($this->result->data['accounts'], array(
-                    'id' => $account->id,
-                    'name' => $account->name,
-                    'balance' => $account->balance
-                ));
-            }
-
-            
         }
 
     }
@@ -318,6 +295,12 @@ class Controller_Api extends Controller{
     }
     
     public function after(){
+        if (isset($this->benchmark)) {
+            Profiler::stop($this->benchmark);
+            echo View::factory('profiler/stats');
+            parent::after();
+            return;
+        }
         parent::after();
         
         $this->response->headers('Content-type', File::mime_by_ext($this->request->param('format')));

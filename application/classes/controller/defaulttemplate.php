@@ -6,6 +6,7 @@ class Controller_DefaultTemplate extends Controller_Template {
     public $title_separator = " &raquo; ";
     public $base_title = "Balance";
     public $page_title = "";
+    public $scripts = array();
 
     /**
      * Initialize properties before running the controller methods (actions),
@@ -37,10 +38,16 @@ class Controller_DefaultTemplate extends Controller_Template {
         $this->page_title = $newtitle;
     }
 
+    public function addScript($script) {
+        array_push($this->scripts, $script);
+    }
+
     /**
      * Fill in default values for our properties before rendering the output.
      */
     public function after() {
+
+        $this->template->scripts = array_merge($this->template->scripts, $this->scripts);
         
         if ($this->auto_render) {
             // Define defaults
