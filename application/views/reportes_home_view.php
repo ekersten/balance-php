@@ -7,11 +7,13 @@
 		</div>
 	</div>
 	<div class="row" id="reportTypes">
-		<div class="span4 well">
-			<ul class="nav nav-list">
-				<li class="nav-header">Reportes disponibles</li>
-				<li><a href="javascript:void(0);" rel="report-type" data-type="monthly">Mensual</a></li>
-			</ul>
+		<div class="span4">
+			<div class="well">
+				<ul class="nav nav-list">
+					<li class="nav-header">Reportes disponibles</li>
+					<li><a href="javascript:void(0);" rel="report-type" data-type="monthly">Mensual</a></li>
+				</ul>
+			</div>
 		</div>
 		<div class="span8" id="reportOptions"></div>
 	</div>

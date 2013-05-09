@@ -21,11 +21,9 @@
           <li<?php if($active_section == 'home') echo ' class="active"';?>>
             <a href="<?php echo Kohana::$base_url; ?>main">Home</a>
           </li>
-          <?php if ($active_user->role->id <= 1) { ?>
           <li<?php if($active_section == 'reportes') echo ' class="active"';?>>
             <a href="<?php echo Kohana::$base_url; ?>reportes">Reportes</a>
           </li>
-          <?php } ?>
         </ul>
       
     </div>
