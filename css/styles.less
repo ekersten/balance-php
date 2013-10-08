@@ -72,5 +72,25 @@ body{
 	border-top: 1px solid #E5E5E5;
 }
 
+.upload_dropzone {
+	border: 3px #999 dashed;
+	text-align: center;
+	padding: 2em;
+	margin-top: .8em;
+	font-weight: bold;
+	color: #999;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	text-transform: uppercase;
+	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+	font-size: 11px;
+	.border-radius(10px);
+
+	&.active {
+		background: #d0fac3;
+		border-color: #090;
+		color: #090;
+	}
+}
+
 // Utility classes
 @import "utilities.less"; // Has to be last to override when necessary

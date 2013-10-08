@@ -13,9 +13,9 @@
 
     <meta name="viewport" content="width=device-width">
 
-    <link rel="stylesheet" type="text/css" href="css/styles.css">
-    <!--<link rel="stylesheet/less" type="text/css" href="css/styles.less">
-    <script type="text/javascript" src="js/libs/less-1.3.0.min.js"></script>-->
+    <!--<link rel="stylesheet" type="text/css" href="css/styles.css">-->
+    <link rel="stylesheet/less" type="text/css" href="css/styles.less">
+    <script type="text/javascript" src="js/libs/less-1.3.0.min.js"></script>
 
     <script src="js/libs/modernizr-2.5.3.min.js"></script>
     <script type="text/javascript">
@@ -30,6 +30,7 @@
         <?php echo $content; ?>
         <?php echo $footer; ?>
     </div>
+    <div id="modal-container" class="modal hide fade"></div>
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="js/libs/jquery-1.7.2.min.js"><\/script>')</script>

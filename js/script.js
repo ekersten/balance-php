@@ -83,6 +83,17 @@ $(document).on('click', 'a.delete-entry',function(e){
 	
 });
 
+
+$(document).on('click', 'a.edit-entry',function(e){
+	e.preventDefault();
+
+	var url = K.base_url + 'main/edit_entry/' + $(this).attr('href');
+	$.get(url, function(data){
+		$(data).modal();
+	});
+
+});
+
 $('#form_operacion button[type=submit]').on('click',function(e){
 	e.preventDefault();
 	$('#form_operacion').trigger('submit');

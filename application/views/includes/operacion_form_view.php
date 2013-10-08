@@ -7,7 +7,7 @@
 				<select name="type_id">
 					<?php foreach($types as $type){ ?>
 						<?php if($type->id != 3){ ?>
-						<option value="<?php echo $type->id;?>"><?php echo $type->name; ?></option>
+						<option value="<?php echo $type->id;?>" <?php if($op->ammount < 0 && $type->id == 1) echo 'selected="selected"'; if($op->ammount > 0 && $type->id == 2) echo 'selected="selected"';?>><?php echo $type->name; ?></option>
 						<?php } ?>
 					<?php } ?>
 				</select>

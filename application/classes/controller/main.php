@@ -209,6 +209,19 @@ class Controller_Main extends Controller_DefaultTemplate {
 		echo json_encode($response);
 	}
 
+	public function action_edit_entry() {
+		$this->auto_render = FALSE;
+
+		$entry = ORM::factory('entry', $this->request->param('id'));
+
+		$view = View::factory('parts/edit_entry_view');
+
+		$view->bind('entry', $entry);
+
+		echo $view->render();
+
+	}
+
 
 	private function create_pagination($current_page,$total_records,$per_page,$num_links){
         if($total_records <= $per_page){

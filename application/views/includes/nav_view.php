@@ -24,6 +24,9 @@
           <li<?php if($active_section == 'reportes') echo ' class="active"';?>>
             <a href="<?php echo Kohana::$base_url; ?>reportes">Reportes</a>
           </li>
+          <li<?php if($active_section == 'import') echo ' class="active"';?>>
+            <a href="<?php echo Kohana::$base_url; ?>import">Importar</a>
+          </li>
         </ul>
       
     </div>
