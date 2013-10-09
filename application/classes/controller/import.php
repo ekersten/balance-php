@@ -54,16 +54,16 @@ class Controller_Import extends Controller_DefaultTemplate {
 		$operations = array();
 		$rows = explode("\n", $data);
 		foreach($rows as $row) {
-			$row_data = explode(",", $row);
-			if($row_data[0] && $row_data[1] && $row_data[3] && $row_data[4]) {
+			$row_data = str_getcsv($row);
+			if(count($row_data) ==  8) { // citibank returns 8 columns
 				$op = new stdClass();
 				
 				preg_match('/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/', $row_data[0], $matches);
 				$op->date =  date('d/m/Y', strtotime($matches[2] . '/' . $matches[1] . '/' . $matches[3]));
 				$op->unixdate =  date('U', strtotime($matches[2] . '/' . $matches[1] . '/' . $matches[3]));
-				$op->ammount = floatval(preg_replace("/[^-0-9\.]/","",$row_data[3] . '.' . $row_data[4]));
+				$op->ammount = $row_data[3];
+				$op->ammount_str = '$ '. $row_data[3];
 				$op->comment = str_replace('"', '', strtolower($row_data[1]));
-
 
 				array_push($operations, $op);
 			}
