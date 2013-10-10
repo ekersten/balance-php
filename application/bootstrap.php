@@ -55,16 +55,13 @@ ini_set('unserialize_callback_func', 'spl_autoload_call');
  */
 I18n::lang('en-us');
 
+
 /**
- * Set Kohana::$environment if a 'KOHANA_ENV' environment variable has been supplied.
- *
- * Note: If you supply an invalid environment name, a PHP warning will be thrown
- * saying "Couldn't find constant Kohana::<INVALID_ENV_NAME>"
+ * Set Kohana environment based on host. If localhost it sets to development. If not production
+ * This is mainly used to change database settings
  */
-if (isset($_SERVER['KOHANA_ENV']))
-{
-	Kohana::$environment = constant('Kohana::'.strtoupper($_SERVER['KOHANA_ENV']));
-}
+Kohana::$environment = ($_SERVER['SERVER_NAME'] !== 'localhost') ? Kohana::PRODUCTION : Kohana::DEVELOPMENT;
+
 
 /**
  * Initialize Kohana, setting the default options.
@@ -110,6 +107,12 @@ Kohana::modules(array(
 	// 'unittest'   => MODPATH.'unittest',   // Unit testing
 	// 'userguide'  => MODPATH.'userguide',  // User guide and API documentation
 	));
+
+/**
+ * Set Kohana Database instance based on host
+ */
+
+Database::$default = Kohana::$environment;
 
 /**
  * Set the routes. Each route must have a minimum of a name, a URI and a set of
